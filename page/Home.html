@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳转微信小程序</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    <script src="./utils.js"></script>
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+        }
+
+      .container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+      .image-container {
+            margin-bottom: 20px;
+        }
+
+      .jump-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+      .jump-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img src="./xzwx.gif" alt="示例图片" width="200" height="200">
+        </div>
+        <button class="jump-button" id="jumpButton">跳转微信小程序</button>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var jumpButton = document.getElementById('jumpButton');
+            jumpButton.addEventListener('click', function () {
+                wx.miniProgram.navigateTo({
+                    url: 'pages/index/index' // 替换为实际的小程序页面路径
+                });
+            });
+            console.log(generateNonceStr(16))
+            $.ajax({
+                url: '/getTimestamp', // 根据实际服务器接口地址修改
+                method: 'GET',
+                success: function (data) {
+                    const timestamp = data.timestamp;
+                    wx.config({
+                        debug: false,
+                        appId: 'wx7717298cb05a16fa', // 替换为实际的公众号appId
+                        timestamp: timestamp,
+                        nonceStr: generateNonceStr(32), // 替换为实际的随机字符串
+                        signature: 'yourSignature', // 替换为实际的签名
+                        jsApiList: ['checkJsApi', 'openAddress', 'getLocation', 'chooseImage', 'previewImage', 'uploadImage', 'downloadImage','scanQRCode','miniProgram.navigateTo']
+                    });
+
+                    wx.ready(function () {
+                        // 尝试自动跳转（实际上可能在很多平台无法实现）
+                        wx.miniProgram.navigateTo({
+                            url: 'pages/index/index' // 替换为实际的小程序页面路径
+                        });
+                    });
+
+                    wx.error(function (res) {
+                        console.error(res.errMsg);
+                    });
+                },
+                error: function (error) {
+                    console.error('获取时间戳失败', error);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
